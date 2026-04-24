@@ -1,0 +1,12 @@
+using Library.Domain.Entities;
+
+namespace Library.Domain.Interfaces
+{
+    public interface IMemberRepository
+    {
+        Task<IEnumerable<Member>> GetAllAsync();
+        Task<Member?> GetByIdAsync(Guid id);
+        Task<Member?> GetByEmailAsync(string email);
+        Task AddAsync(Member member);
+    }
+}

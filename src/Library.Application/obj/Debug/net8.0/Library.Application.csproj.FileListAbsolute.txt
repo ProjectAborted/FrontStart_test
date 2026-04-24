@@ -1,0 +1,6 @@
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.csproj.AssemblyReference.cache
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.AssemblyInfoInputs.cache
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.AssemblyInfo.cs
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.csproj.CoreCompileInputs.cache
+/Users/bryan/Desktop/FrontStart_test/src/Library.Application/obj/Debug/net8.0/Library.Application.sourcelink.json

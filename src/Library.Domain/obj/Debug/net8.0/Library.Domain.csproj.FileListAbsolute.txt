@@ -1,0 +1,12 @@
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/bin/Debug/net8.0/Library.Domain.deps.json
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/bin/Debug/net8.0/Library.Domain.dll
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/bin/Debug/net8.0/Library.Domain.pdb
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.AssemblyInfoInputs.cache
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.AssemblyInfo.cs
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.csproj.CoreCompileInputs.cache
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.sourcelink.json
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.dll
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/refint/Library.Domain.dll
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/Library.Domain.pdb
+/Users/bryan/Desktop/FrontStart_test/src/Library.Domain/obj/Debug/net8.0/ref/Library.Domain.dll
