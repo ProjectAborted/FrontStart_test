@@ -1,39 +1,93 @@
-using System;
-using Library.Domain.Interfaces;
-using Library.Domain.Entities;
+using Library.Application.DTOs;
+using Library.Application.Exceptions;
 using Library.Application.Interfaces;
+using Library.Domain.Entities;
+using Library.Domain.Interfaces;
 
 namespace Library.Application.Services
 {
     public class MemberService : IMemberService
     {
         private readonly IMemberRepository _memberRepository;
-    
-    public MemberService(IMemberRepository memberRepository)
+
+        public MemberService(IMemberRepository memberRepository)
         {
             _memberRepository = memberRepository;
         }
 
-        public async Task<IEnumerable<Member>> GetAllMembersAsync()
+        public async Task<IEnumerable<MemberResponseDto>> GetAllMembersAsync()
         {
-            return await _memberRepository.GetAllAsync();
+            var members = await _memberRepository.GetAllAsync();
+            return members.Select(MapToDto);
         }
 
-        public async Task<Member> GetMemberByIdAsync(Guid id)
+        public async Task<MemberResponseDto> GetMemberByIdAsync(Guid id)
         {
             var member = await _memberRepository.GetByIdAsync(id);
-            if (member == null) throw new Exception("Member not found");
-            return member;
+
+            // FIX: was throwing generic Exception("Member not found") → now throws
+            // NotFoundException which the middleware maps to 404 Not Found
+            if (member == null)
+                throw new NotFoundException($"Member with id '{id}' was not found.");
+
+            return MapToDto(member);
         }
 
-        public async Task CreateMemberAsync(Member member)
+        public async Task<MemberResponseDto> CreateMemberAsync(CreateMemberDto dto)
         {
-            // Business Rule: Ensure email is unique before adding
-            var existing = await _memberRepository.GetByEmailAsync(member.Email);
-            if (existing != null) throw new Exception("Email already registered");
+            var existing = await _memberRepository.GetByEmailAsync(dto.Email);
+
+            // FIX: was throwing generic Exception → now ConflictException → 409
+            if (existing != null)
+                throw new ConflictException($"A member with email '{dto.Email}' already exists.");
+
+            var member = new Member
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                MembershipDate = DateTime.UtcNow
+            };
 
             await _memberRepository.AddAsync(member);
+            return MapToDto(member);
         }
 
+        public async Task<MemberResponseDto> UpdateMemberAsync(Guid id, CreateMemberDto dto)
+        {
+            var member = await _memberRepository.GetByIdAsync(id);
+            if (member == null)
+                throw new NotFoundException($"Member with id '{id}' was not found.");
+
+            // If email is changing, ensure the new one isn't taken by someone else
+            if (!string.Equals(member.Email, dto.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                var conflict = await _memberRepository.GetByEmailAsync(dto.Email);
+                if (conflict != null)
+                    throw new ConflictException($"Email '{dto.Email}' is already in use.");
+            }
+
+            member.FullName = dto.FullName;
+            member.Email = dto.Email;
+
+            await _memberRepository.UpdateAsync(member);
+            return MapToDto(member);
+        }
+
+        public async Task DeleteMemberAsync(Guid id)
+        {
+            var member = await _memberRepository.GetByIdAsync(id);
+            if (member == null)
+                throw new NotFoundException($"Member with id '{id}' was not found.");
+
+            await _memberRepository.DeleteAsync(id);
+        }
+
+        private static MemberResponseDto MapToDto(Member m) => new()
+        {
+            Id = m.Id,
+            FullName = m.FullName,
+            Email = m.Email,
+            MembershipDate = m.MembershipDate
+        };
     }
 }

@@ -1,11 +1,13 @@
-using Library.Domain.Entities;
+using Library.Application.DTOs;
 
 namespace Library.Application.Interfaces
 {
     public interface IMemberService
     {
-        Task<IEnumerable<Member>> GetAllMembersAsync();
-        Task<Member> GetMemberByIdAsync(Guid id);
-        Task CreateMemberAsync(Member member);
+        Task<IEnumerable<MemberResponseDto>> GetAllMembersAsync();
+        Task<MemberResponseDto> GetMemberByIdAsync(Guid id);
+        Task<MemberResponseDto> CreateMemberAsync(CreateMemberDto dto);
+        Task<MemberResponseDto> UpdateMemberAsync(Guid id, CreateMemberDto dto);
+        Task DeleteMemberAsync(Guid id);
     }
 }

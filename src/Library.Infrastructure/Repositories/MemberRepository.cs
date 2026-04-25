@@ -5,18 +5,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
-public class MemberRepository(AppDbContext context) : IMemberRepository
+public class MemberRepository : IMemberRepository
 {
-    public async Task<IEnumerable<Member>> GetAllAsync() => await context.Members.ToListAsync();
-    
-    public async Task<Member?> GetByIdAsync(Guid id) => await context.Members.FindAsync(id);
+    private readonly AppDbContext _context;
 
-    public async Task<Member?> GetByEmailAsync(string email) => 
-        await context.Members.FirstOrDefaultAsync(m => m.Email == email);
+    public MemberRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Member>> GetAllAsync() =>
+        await _context.Members.ToListAsync();
+
+    public async Task<Member?> GetByIdAsync(Guid id) =>
+        await _context.Members.FindAsync(id);
+
+    public async Task<Member?> GetByEmailAsync(string email) =>
+        await _context.Members.FirstOrDefaultAsync(m => m.Email == email);
 
     public async Task AddAsync(Member member)
     {
-        await context.Members.AddAsync(member);
-        await context.SaveChangesAsync();
+        await _context.Members.AddAsync(member);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Member member)
+    {
+        _context.Members.Update(member);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var member = await _context.Members.FindAsync(id);
+        if (member != null)
+        {
+            _context.Members.Remove(member);
+            await _context.SaveChangesAsync();
+        }
     }
 }

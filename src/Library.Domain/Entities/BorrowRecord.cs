@@ -1,5 +1,3 @@
-using System;
-
 namespace Library.Domain.Entities
 {
     public class BorrowRecord
@@ -8,10 +6,13 @@ namespace Library.Domain.Entities
         public Guid BookId { get; set; }
         public Guid MemberId { get; set; }
         public DateTime BorrowDate { get; set; } = DateTime.UtcNow;
-        public DateTime? ReturnDate { get; set; } // Nullable because it hasn't been returned yet
-        public string Status { get; set; } = "Borrowed"; 
 
-        // Navigation Properties (Optional but highly recommended)
+        // Nullable: null means the book has not been returned yet
+        public DateTime? ReturnDate { get; set; }
+
+        public string Status { get; set; } = "Borrowed";
+
+        // Navigation properties allow EF Core to load related data via .Include()
         public virtual Book? Book { get; set; }
         public virtual Member? Member { get; set; }
     }
