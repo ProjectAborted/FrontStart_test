@@ -1,5 +1,6 @@
 namespace Library.Domain.Entities
 {
+    // Library member profile 
     public class Member
     {
         public Guid Id { get; set; } = Guid.NewGuid();

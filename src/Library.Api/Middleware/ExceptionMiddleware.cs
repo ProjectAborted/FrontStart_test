@@ -4,6 +4,8 @@ using Library.Application.Exceptions;
 
 namespace Library.Api.Middleware;
 
+// Centralized error handling to capture exceptions and return JSON responses across API
+
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
@@ -16,25 +18,28 @@ public class ExceptionMiddleware
         {
             await _next(context);
         }
+        // Handles 404: missing resources
         catch (NotFoundException ex)
         {
             await WriteErrorAsync(context, HttpStatusCode.NotFound, ex.Message);
         }
+        // Handles 404: validation or logic errors
         catch (BadRequestException ex)
         {
             await WriteErrorAsync(context, HttpStatusCode.BadRequest, ex.Message);
         }
+        // Handles 409: state conflicts ~like duplicate entries 
         catch (ConflictException ex)
         {
             await WriteErrorAsync(context, HttpStatusCode.Conflict, ex.Message);
         }
+        // Catch-all 500: unhandled system errors return a generic server-side error message
         catch (Exception ex)
         {
-            // Generic fallback — do NOT expose stack traces to clients
             await WriteErrorAsync(context, HttpStatusCode.InternalServerError,
                 "An unexpected error occurred.");
 
-            // Log the real exception server-side (console here; swap for ILogger in production)
+            // Log detailed error information to server 
             Console.Error.WriteLine($"[{DateTime.UtcNow:u}] Unhandled exception: {ex}");
         }
     }

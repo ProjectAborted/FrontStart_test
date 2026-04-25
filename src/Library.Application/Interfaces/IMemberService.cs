@@ -2,6 +2,7 @@ using Library.Application.DTOs;
 
 namespace Library.Application.Interfaces
 {
+    // Business logic operations for managing library member profiles and registrations
     public interface IMemberService
     {
         Task<IEnumerable<MemberResponseDto>> GetAllMembersAsync();

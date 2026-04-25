@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Library.Application.DTOs
 {
-    // FIX: BorrowRequest was referenced in BooksController but never defined anywhere.
-    // Both IDs must be Guid to match Book.Id and Member.Id.
+    // Data transfer object for book loan
     public class BorrowRequestDto
     {
         [Required]
@@ -13,6 +12,7 @@ namespace Library.Application.DTOs
         public Guid MemberId { get; set; }
     }
 
+    // Data transfer object for book return
     public class ReturnRequestDto
     {
         [Required]
@@ -22,6 +22,7 @@ namespace Library.Application.DTOs
         public Guid MemberId { get; set; }
     }
 
+    // Response object for the borrowed book
     public class BorrowRecordResponseDto
     {
         public Guid Id { get; set; }

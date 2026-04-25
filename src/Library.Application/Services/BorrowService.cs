@@ -4,6 +4,7 @@ using Library.Domain.Interfaces;
 
 namespace Library.Application.Services
 {
+    // Handles history of borrowing for administrative/individual record tracking
     public class BorrowService : IBorrowService
     {
         private readonly IBorrowRepository _borrowRepository;
@@ -13,18 +14,21 @@ namespace Library.Application.Services
             _borrowRepository = borrowRepository;
         }
 
+        // Retrieves every transaction record across entire library system
         public async Task<IEnumerable<BorrowRecordResponseDto>> GetAllRecordsAsync()
         {
             var records = await _borrowRepository.GetAllAsync();
             return records.Select(MapToDto);
         }
 
+        // Retrieves filtered list of borrowing activities for specific library member
         public async Task<IEnumerable<BorrowRecordResponseDto>> GetMemberHistoryAsync(Guid memberId)
         {
             var records = await _borrowRepository.GetByMemberIdAsync(memberId);
             return records.Select(MapToDto);
         }
 
+        // Maps internal database entity to data transfer object for the client
         private static BorrowRecordResponseDto MapToDto(Domain.Entities.BorrowRecord r) => new()
         {
             Id = r.Id,

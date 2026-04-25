@@ -8,33 +8,36 @@ using Library.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// FIX: Added 'using Microsoft.EntityFrameworkCore' — was missing, causing compile error.
-// FIX: Connection string now read from appsettings.json instead of hardcoded "..."
+// Database Configuration ------
+// Configures EntityCoreFramework to use SQL Server w/ connection string from appsettings.json
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --- Dependency Injection ---
-// Repositories
+// Repositories ------
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IBorrowRepository, BorrowRepository>();
 
-// Services
+// Services ------
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IBorrowService, BorrowService>();
 
-// Caching — required by BookService
+// Caching —----- 
+// Enables In-Memory caching for application
 builder.Services.AddMemoryCache();
 
+// API Setup ------
+// Controller-based routing
 builder.Services.AddControllers();
 
-// FIX: Swagger was missing — launchSettings.json opens /swagger on launch,
-// which returned a 404 without this registration.
+// launchSettings.json opens /swagger on launch,
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// HTTP Pipeline Configuration ------
 
 if (app.Environment.IsDevelopment())
 {
@@ -46,8 +49,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Global error handling — must be registered before MapControllers
+// Global Error Handling ------
 app.UseMiddleware<ExceptionMiddleware>();
 
+// Routes incoming requests to controller actions
 app.MapControllers();
+// Starts web application
 app.Run();

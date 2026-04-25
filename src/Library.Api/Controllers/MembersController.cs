@@ -13,7 +13,7 @@ public class MembersController : ControllerBase
 
     public MembersController(IMemberService service) => _service = service;
 
-    // GET /api/members
+    // GET /api/members - Retrieves list of all library members
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -21,15 +21,15 @@ public class MembersController : ControllerBase
         return Ok(members);
     }
 
-    // GET /api/members/{id}
+    // GET /api/members/{id} - Retreives details for a single member by their id
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var member = await _service.GetMemberByIdAsync(id);
-        return Ok(member);  // NotFoundException → 404 via middleware
+        return Ok(member);  // NotFoundException handled by Middleware
     }
 
-    // POST /api/members → 201 Created
+    // POST /api/members - Creates new member and returns profile with assigned id
     [HttpPost]
     public async Task<IActionResult> Create(CreateMemberDto dto)
     {
@@ -37,7 +37,7 @@ public class MembersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    // PUT /api/members/{id}
+    // PUT /api/members/{id} - Updates existing members information (contact details or status)
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, CreateMemberDto dto)
     {
@@ -45,7 +45,7 @@ public class MembersController : ControllerBase
         return Ok(updated);
     }
 
-    // DELETE /api/members/{id}
+    // DELETE /api/members/{id} - Deletes member profile from system
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {

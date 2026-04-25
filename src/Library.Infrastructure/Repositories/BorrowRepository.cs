@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
+// EF Core implementation for managing transaction data, active loans, and member history
 public class BorrowRepository : IBorrowRepository
 {
     private readonly AppDbContext _context;
@@ -14,13 +15,14 @@ public class BorrowRepository : IBorrowRepository
         _context = context;
     }
 
-    // Include navigation properties so BorrowService can read Book.Title and Member.FullName
+    // Retrieves all records, including related Book and Member data for mapping
     public async Task<IEnumerable<BorrowRecord>> GetAllAsync() =>
         await _context.BorrowRecords
             .Include(r => r.Book)
             .Include(r => r.Member)
             .ToListAsync();
 
+    // Retrieves borrowing history for a specific member, including related entity data
     public async Task<IEnumerable<BorrowRecord>> GetByMemberIdAsync(Guid memberId) =>
         await _context.BorrowRecords
             .Include(r => r.Book)
@@ -28,8 +30,7 @@ public class BorrowRepository : IBorrowRepository
             .Where(r => r.MemberId == memberId)
             .ToListAsync();
 
-    // Used during return: find the single active record for this book + member pair.
-    // If none exists the member is trying to return a book they never borrowed → 400.
+    // Locates an active "Borrowed" record to process a book return
     public async Task<BorrowRecord?> GetActiveBorrowAsync(Guid bookId, Guid memberId) =>
         await _context.BorrowRecords
             .FirstOrDefaultAsync(r =>

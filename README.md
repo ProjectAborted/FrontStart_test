@@ -2,24 +2,38 @@
 ├── .gitignore                    # Standard .NET ignore file
 ├── README.md                     # Group/Team name and documentation
 ├── src/
-│   ├── Library.Domain/           # Core Entities and Repository Contracts
-│   │   ├── Entities/             # Book.cs, Member.cs, BorrowRecord.cs
-│   │   └── Interfaces/           # IBookRepository.cs, IMemberRepository.cs
+│   ├── Library.Api/ (Entry Point & Controllers)
+│   │   ├── Controllers/
+│   │   │   ├── BooksController.cs       # Routes for CRUD on Books
+│   │   │   ├── BorrowsController.cs     # Routes for Borrowing/Returning/History
+│   │   │   └── MembersController.cs     # Routes for Member management
+│   │   ├── Program.cs                   # Registers Services, Repos, and DB
+│   │   └── appsettings.json             # DB Connection strings
 │   │
-│   ├── Library.Application/      # Business Logic and DTOs
-│   │   ├── DTOs/                 # Requests (CreateBookDto) and Responses (BookResponseDto)
-│   │   ├── Interfaces/           # IBookService.cs, IMemberService.cs
-│   │   ├── Services/             # BookService.cs (Handles borrowing/return rules)
-│   │   └── Exceptions/           # Custom exceptions for Global Error Handling
+│   ├── Library.Application/ (Business Logic & DTOs)
+│   │   ├── DTOs/
+│   │   │   ├── BookDtos.cs              # Request/Response models for Books
+│   │   │   ├── MemberDtos.cs            # Added: MembershipDate field
+│   │   │   └── BorrowDtos.cs            # Added: BorrowDate, ReturnDate, Status fields
+│   │   ├── Interfaces/                  # Contracts for the Services
+│   │   └── Services/
+│   │       ├── BookService.cs           # Book logic (Validating copy counts)
+│   │       ├── MemberService.cs         # Member logic (Setting MembershipDate)
+│   │       └── BorrowService.cs         # Core logic (Updating AvailableCopies)
 │   │
-│   ├── Library.Infrastructure/   # Data Access (Entity Framework)
-│   │   ├── Data/                 # AppDbContext.cs (Handles Concurrency tokens)
-│   │   ├── Repositories/         # BookRepository.cs (Async DB operations)
-│   │   └── Migrations/           # EF Core Database migrations
+│   ├── Library.Domain/ (Core Models)
+│   │   ├── Entities/
+│   │   │   ├── Book.cs                  # Props: Title, Author, ISBN, Copies
+│   │   │   ├── Member.cs                # Props: FullName, Email, MembershipDate
+│   │   │   └── BorrowRecord.cs          # Props: Dates and Status ("Borrowed"/"Returned")
+│   │   └── Interfaces/                  # Repository contracts (IBookRepository, etc.)
 │   │
-│   └── Library.Api/              # Controllers and Entry Point
-│       ├── Controllers/          # BooksController.cs, MembersController.cs
-│       ├── Middleware/           # GlobalExceptionMiddleware.cs
-│       ├── Program.cs            # Dependency Injection (DI) & Caching setup
-│       └── appsettings.json      # Connection strings
-└── tests/                        # Unit tests for Services/Logic
+│   └── Library.Infrastructure/ (Data Access)
+│       ├── Data/
+│       │   └── AppDbContext.cs          # EF Core context for DB tables
+│       └── Repositories/
+│           ├── BookRepository.cs        # Direct Database queries for Books
+│           ├── MemberRepository.cs      # Direct Database queries for Members
+│           └── BorrowRepository.cs      # Added: Logic to find "Active" borrows
+│
+└── Library.sln

@@ -2,12 +2,12 @@ using Library.Domain.Entities;
 
 namespace Library.Domain.Interfaces
 {
+    // Tracking book loan transactions and history
     public interface IBorrowRepository
     {
         Task<IEnumerable<BorrowRecord>> GetAllAsync();
         Task<IEnumerable<BorrowRecord>> GetByMemberIdAsync(Guid memberId);
 
-        // Used during return: find the active "Borrowed" record for this book+member
         Task<BorrowRecord?> GetActiveBorrowAsync(Guid bookId, Guid memberId);
 
         Task AddAsync(BorrowRecord record);

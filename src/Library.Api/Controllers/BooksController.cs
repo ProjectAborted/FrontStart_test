@@ -8,13 +8,13 @@ namespace Library.Api.Controllers;
 [Route("api/[controller]")]
 public class BooksController : ControllerBase
 {
-    // FIX: Controller now depends on IBookService only — no business logic lives here.
+    // Controller depends on IBookService only
     // All rules (copies check, cache, concurrency) are enforced in BookService.
     private readonly IBookService _service;
 
     public BooksController(IBookService service) => _service = service;
 
-    // GET /api/books — returns cached list on subsequent calls
+    // GET /api/books — Retrieves all books
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -22,15 +22,15 @@ public class BooksController : ControllerBase
         return Ok(books);
     }
 
-    // GET /api/books/{id}
+    // GET /api/books/{id} - Gets book by its unique id
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id)
     {
         var book = await _service.GetBookByIdAsync(id);
-        return Ok(book);    // NotFoundException handled by ExceptionMiddleware → 404
+        return Ok(book);    // NotFoundException handled by ExceptionMiddleware 
     }
 
-    // POST /api/books → 201 Created
+    // POST /api/books - Creates a new book and returns it to confirm created resource
     [HttpPost]
     public async Task<IActionResult> Create(CreateBookDto dto)
     {
@@ -38,7 +38,7 @@ public class BooksController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    // PUT /api/books/{id}
+    // PUT /api/books/{id} - Updates book record based on Id and data
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, CreateBookDto dto)
     {
@@ -46,7 +46,7 @@ public class BooksController : ControllerBase
         return Ok(updated);
     }
 
-    // DELETE /api/books/{id}
+    // DELETE /api/books/{id} - Deletes record from the system
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -54,8 +54,7 @@ public class BooksController : ControllerBase
         return NoContent();
     }
 
-    // POST /api/books/borrow
-    // FIX: BorrowRequest was never defined — replaced with BorrowRequestDto (Guid fields)
+    // POST /api/books/borrow - Request to borrow a book
     [HttpPost("borrow")]
     public async Task<IActionResult> Borrow(BorrowRequestDto request)
     {
@@ -63,7 +62,7 @@ public class BooksController : ControllerBase
         return Ok(new { message = "Book borrowed successfully." });
     }
 
-    // POST /api/books/return
+    // POST /api/books/return - Process the return of a borrowed book and updates inventory
     [HttpPost("return")]
     public async Task<IActionResult> Return(ReturnRequestDto request)
     {

@@ -8,13 +8,13 @@ using Library.Domain.Interfaces;
 
 namespace Library.Application.Services;
 
+// Book management logic (stock, memory caching, concurrency-safe borrowing)
 public class BookService : IBookService
 {
     private readonly IBookRepository _bookRepository;
     private readonly IBorrowRepository _borrowRepository;
     private readonly IMemoryCache _cache;
 
-    // Cache key constant avoids magic strings scattered across the service
     private const string AllBooksCacheKey = "all_books";
 
     public BookService(
@@ -27,9 +27,8 @@ public class BookService : IBookService
         _cache = cache;
     }
 
-    // CACHING: GetAllBooksAsync is the read-heavy endpoint chosen for caching.
-    // First call hits the DB and stores the result for 10 minutes.
-    // Subsequent calls return instantly from memory — no DB round trip.
+
+    // Returns a cached list of books if available, otherwise fetches for database for 10 minutes
     public async Task<IEnumerable<BookResponseDto>> GetAllBooksAsync()
     {
         return await _cache.GetOrCreateAsync(AllBooksCacheKey, async entry =>
@@ -50,7 +49,6 @@ public class BookService : IBookService
 
     public async Task<BookResponseDto> CreateBookAsync(CreateBookDto dto)
     {
-        // Service-level validation: AvailableCopies must not exceed TotalCopies
         if (dto.AvailableCopies > dto.TotalCopies)
             throw new BadRequestException("AvailableCopies cannot exceed TotalCopies.");
 
@@ -65,7 +63,6 @@ public class BookService : IBookService
 
         await _bookRepository.AddAsync(book);
 
-        // FIX: Invalidate cache whenever data changes so reads stay accurate
         _cache.Remove(AllBooksCacheKey);
 
         return MapToDto(book);
@@ -102,12 +99,9 @@ public class BookService : IBookService
         _cache.Remove(AllBooksCacheKey);
     }
 
-    // BORROW — concurrency-safe
-    // CONCURRENCY: Two users can simultaneously read AvailableCopies = 1 and both
-    // try to borrow. The [Timestamp] RowVersion column on Book means EF Core adds
-    // a WHERE RowVersion = <original> clause to the UPDATE. Only one transaction
-    // will match; the other throws DbUpdateConcurrencyException, which we catch
-    // and convert to a 409 Conflict so the client knows to retry.
+
+    // Decrements stock and creates a borrow record
+    // Uses RowVersion to handle simultaneous borrow requests via ConflictException
     public async Task BorrowBookAsync(BorrowRequestDto request)
     {
         var book = await _bookRepository.GetByIdAsync(request.BookId);
@@ -129,20 +123,18 @@ public class BookService : IBookService
 
         try
         {
-            // FIX: CreateBorrowRecordAsync is now declared in IBookRepository
-            // and implemented in BookRepository — it was previously missing entirely.
             await _bookRepository.CreateBorrowRecordAsync(record);
             await _bookRepository.UpdateAsync(book);
             _cache.Remove(AllBooksCacheKey);
         }
         catch (DbUpdateConcurrencyException)
         {
-            // Another request already decremented AvailableCopies between our read and write
             throw new ConflictException("This book was just borrowed by someone else. Please try again.");
         }
     }
 
-    // RETURN: finds the active borrow record, marks it Returned, and increments AvailableCopies
+
+    // Finds the active borrow record, marks it Returned, and increments AvailableCopies
     public async Task ReturnBookAsync(ReturnRequestDto request)
     {
         var book = await _bookRepository.GetByIdAsync(request.BookId);

@@ -6,6 +6,7 @@ using Library.Domain.Interfaces;
 
 namespace Library.Application.Services
 {
+    // Manages library member accounts, registration, profile update and email validation
     public class MemberService : IMemberService
     {
         private readonly IMemberRepository _memberRepository;
@@ -25,8 +26,6 @@ namespace Library.Application.Services
         {
             var member = await _memberRepository.GetByIdAsync(id);
 
-            // FIX: was throwing generic Exception("Member not found") → now throws
-            // NotFoundException which the middleware maps to 404 Not Found
             if (member == null)
                 throw new NotFoundException($"Member with id '{id}' was not found.");
 
@@ -37,7 +36,6 @@ namespace Library.Application.Services
         {
             var existing = await _memberRepository.GetByEmailAsync(dto.Email);
 
-            // FIX: was throwing generic Exception → now ConflictException → 409
             if (existing != null)
                 throw new ConflictException($"A member with email '{dto.Email}' already exists.");
 
@@ -52,13 +50,13 @@ namespace Library.Application.Services
             return MapToDto(member);
         }
 
+        // Updatesd existing members profile and validates email avialability
         public async Task<MemberResponseDto> UpdateMemberAsync(Guid id, CreateMemberDto dto)
         {
             var member = await _memberRepository.GetByIdAsync(id);
             if (member == null)
                 throw new NotFoundException($"Member with id '{id}' was not found.");
 
-            // If email is changing, ensure the new one isn't taken by someone else
             if (!string.Equals(member.Email, dto.Email, StringComparison.OrdinalIgnoreCase))
             {
                 var conflict = await _memberRepository.GetByEmailAsync(dto.Email);
@@ -82,6 +80,7 @@ namespace Library.Application.Services
             await _memberRepository.DeleteAsync(id);
         }
 
+        // Maps domain member entity to a MemeberResponseDTO for client safety
         private static MemberResponseDto MapToDto(Member m) => new()
         {
             Id = m.Id,

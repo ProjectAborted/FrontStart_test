@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Library.Application.DTOs
 {
-    // Used for POST /api/books and PUT /api/books/{id}
-    // Clients send this; the entity is never exposed directly.
+    // Data transfer object for creating/updating book
     public class CreateBookDto
     {
         [Required(ErrorMessage = "Title is required.")]
@@ -12,7 +11,6 @@ namespace Library.Application.DTOs
         [Required(ErrorMessage = "Author is required.")]
         public string Author { get; set; } = string.Empty;
 
-        // FIX: ISBN is string — hyphens and leading zeros must be preserved
         [Required(ErrorMessage = "ISBN is required.")]
         public string ISBN { get; set; } = string.Empty;
 
@@ -23,7 +21,7 @@ namespace Library.Application.DTOs
         public int AvailableCopies { get; set; }
     }
 
-    // Returned to clients; never exposes the EF entity or RowVersion byte[]
+    // Response object for book information previously created/updated
     public class BookResponseDto
     {
         public Guid Id { get; set; }

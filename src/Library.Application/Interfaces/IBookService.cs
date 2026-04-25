@@ -2,6 +2,7 @@ using Library.Application.DTOs;
 
 namespace Library.Application.Interfaces;
 
+// Business logic operations for managing all books including those in circulation
 public interface IBookService
 {
     Task<IEnumerable<BookResponseDto>> GetAllBooksAsync();

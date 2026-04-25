@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
+// EF Core implementation for managing member repository, data persistence, and lookups for member profiles
 public class MemberRepository : IMemberRepository
 {
     private readonly AppDbContext _context;
@@ -20,6 +21,7 @@ public class MemberRepository : IMemberRepository
     public async Task<Member?> GetByIdAsync(Guid id) =>
         await _context.Members.FindAsync(id);
 
+    // Email uniqueness checks during registration and updates
     public async Task<Member?> GetByEmailAsync(string email) =>
         await _context.Members.FirstOrDefaultAsync(m => m.Email == email);
 

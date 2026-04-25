@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Core API Documentation & Tooling (Swagger) -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.23" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Project Dependencies: Links api layer to application logic -->
     <ProjectReference Include="..\Library.Application\Library.Application.csproj" />
+    <!-- Project Dependencies: Links api layer to Data/Infrastructure layer -->
     <ProjectReference Include="..\Library.Infrastructure\Library.Infrastructure.csproj" />
   </ItemGroup>
 

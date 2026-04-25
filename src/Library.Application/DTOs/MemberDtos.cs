@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Library.Application.DTOs
 {
+    // Data transfer object for registering/updating member details
     public class CreateMemberDto
     {
         [Required(ErrorMessage = "FullName is required.")]
@@ -12,6 +13,7 @@ namespace Library.Application.DTOs
         public string Email { get; set; } = string.Empty;
     }
 
+    // Response object containing public member information
     public class MemberResponseDto
     {
         public Guid Id { get; set; }

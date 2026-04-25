@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Infrastructure.Repositories;
 
+// EF Core implementation of book repository, handling persistence, and retrieval for books and their borrow records
 public class BookRepository : IBookRepository
 {
     private readonly AppDbContext _context;
@@ -43,8 +44,7 @@ public class BookRepository : IBookRepository
         }
     }
 
-    // FIX: this method was called in BookService.BorrowBookAsync but was never
-    // declared in IBookRepository or implemented here — now it is both.
+    // Creates new transaction entry in the BorrowRecords Table
     public async Task CreateBorrowRecordAsync(BorrowRecord record)
     {
         await _context.BorrowRecords.AddAsync(record);

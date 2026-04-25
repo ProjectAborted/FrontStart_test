@@ -11,7 +11,7 @@ public class BorrowsController : ControllerBase
 
     public BorrowsController(IBorrowService service) => _service = service;
 
-    // GET /api/borrows — all borrow records
+    // GET /api/borrows — Retrieves complete history of borrows and returns in the system
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -19,7 +19,7 @@ public class BorrowsController : ControllerBase
         return Ok(records);
     }
 
-    // GET /api/borrows/member/{memberId} — history for one member
+    // GET /api/borrows/member/{memberId} — Retrieves all borrow records associated with member id
     [HttpGet("member/{memberId:guid}")]
     public async Task<IActionResult> GetMemberHistory(Guid memberId)
     {
